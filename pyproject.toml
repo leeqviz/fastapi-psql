@@ -1,7 +1,7 @@
 [project]
-name = "test-service"
+name = "DnD-Character-Manager"
 version = "0.1.0"
-description = "Add your description here"
+description = "DnD Character Manager API"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
