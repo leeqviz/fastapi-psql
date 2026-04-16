@@ -1,7 +1,7 @@
-from os import path
-
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from src.utils import in_container
 
 
 class AppConfig(BaseModel):
@@ -20,37 +20,36 @@ class CORSConfig(BaseModel):
     headers: list = ["*"]
     credentials: bool = True
 
+class PostgresConfig(BaseModel):
+    host: str | None = None
+    port: str | None = None
+    user: str | None = None
+    password: str | None = None
+    db: str | None = None
+    service: str | None = None
+    
+    echo: bool = False
+    echo_pool: bool = False
+    pool_size: int = 50
+    max_overflow: int = 10
+    
+    @computed_field
+    @property
+    def url(self) -> str:            
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.service if in_container() else self.host + ':' + self.port}/{self.db}"      
 
 class Settings(BaseSettings):
-    app: AppConfig = AppConfig()
-    api: ApiConfig = ApiConfig()
-    cors: CORSConfig = CORSConfig()
-
-    POSTGRES_PORT: str | None = None
-    POSTGRES_HOST: str | None = None
-    POSTGRES_USER: str | None = None
-    POSTGRES_PASSWORD: str | None = None
-    POSTGRES_DB: str | None = None
-    POSTGRES_SERVICE: str | None = None
-
     model_config = SettingsConfigDict(
-        env_file=".env", 
+        case_sensitive=False,
+        env_file=(".env"), 
+        env_nested_delimiter="_",
         env_file_encoding="utf-8", 
         extra="ignore"
     )
-
-    @property
-    def in_container(self) -> bool:
-        return path.exists("/.dockerenv")
     
-    @property
-    def database_url(self) -> str:
-        if self.in_container:
-            path = self.POSTGRES_SERVICE
-        else:
-            path = self.POSTGRES_HOST + ":" + self.POSTGRES_PORT
-        
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{path}/{self.POSTGRES_DB}"
+    app: AppConfig = AppConfig()
+    api: ApiConfig = ApiConfig()
+    cors: CORSConfig = CORSConfig()
+    postgres: PostgresConfig = PostgresConfig()
 
 settings = Settings()
-    

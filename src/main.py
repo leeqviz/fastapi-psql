@@ -4,14 +4,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .configs import settings
-from .db import init_db
+from .db import postgresConnection
 from .routers import api_router
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    await init_db()
+    await postgresConnection.init()
     yield
+    await postgresConnection.dispose()
 
 app = FastAPI(lifespan=lifespan)
 

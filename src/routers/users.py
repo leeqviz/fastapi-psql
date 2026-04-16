@@ -3,13 +3,13 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db import get_async_session
+from src.db import postgresConnection
 from src.schemas.user import UserIn, UserOut
 from src.services.users import UsersService
 
 users_router = APIRouter()
 
-def get_users_service(session: AsyncSession = Depends(get_async_session)) -> UsersService:
+def get_users_service(session: AsyncSession = Depends(postgresConnection.get_session)) -> UsersService:
     return UsersService(session)
 
 @users_router.get("/", response_model=list[UserOut])
