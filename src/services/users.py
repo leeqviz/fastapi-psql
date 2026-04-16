@@ -29,18 +29,18 @@ class UsersService:
     
     async def update(self, user_id: UUID, user: UserIn):
         
-        db_user = await self.get_by_id(user_id)
+        db_user = await self.repo.get_by_id(user_id)
         if not db_user:
             raise Exception("User not found")
         
         db_user.name = user.name if user.name is not None else db_user.name
         db_user.email = user.email if user.email is not None else db_user.email
-        db_user.password = user.password is not None if user.password else db_user.password
+        db_user.password = user.password if user.password is not None else db_user.password
         await self.session.commit()
         return UserOut.model_validate(db_user)
     
     async def delete(self, user_id: UUID):
-        db_user = await self.get_by_id(user_id)
+        db_user = await self.repo.get_by_id(user_id)
         if not db_user:
             raise Exception("User not found")
         
