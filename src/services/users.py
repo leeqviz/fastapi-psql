@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID, uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,17 +16,17 @@ class UsersService:
         users = await self.repo.get_all()
         return [UserOut.model_validate(user) for user in users]
     
-    async def get_by_id(self, user_id: uuid.UUID):
+    async def get_by_id(self, user_id: UUID):
         user = await self.repo.get_by_id(user_id)
         return UserOut.model_validate(user)
     
     async def create(self, user: UserIn):
-        new_user = User(id=uuid.uuid4(), name=user.name, email=user.email, password=user.password)
+        new_user = User(id=uuid4(), name=user.name, email=user.email, password=user.password)
         await self.repo.create(new_user)
         await self.session.commit()
         return new_user
     
-    async def update(self, user_id: uuid.UUID, user: UserIn):
+    async def update(self, user_id: UUID, user: UserIn):
         
         db_user = await self.get_by_id(user_id)
         if not db_user:
@@ -38,7 +38,7 @@ class UsersService:
         await self.session.commit()
         return UserOut.model_validate(db_user)
     
-    async def delete(self, user_id: uuid.UUID):
+    async def delete(self, user_id: UUID):
         db_user = await self.get_by_id(user_id)
         if not db_user:
             raise Exception("User not found")

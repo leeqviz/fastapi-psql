@@ -3,33 +3,38 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.db import init_db
-from src.routers.users import users_router
+from .configs import settings
+from .db import psql_conn
+from .routers import api_router
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    print("server is starting...")
-    await init_db()
+    await psql_conn.init()
     yield
-    print("server is stopping...")
+    await psql_conn.dispose()
 
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-    allow_credentials=True,   # Allows cookies
+    allow_origins=settings.cors.origins,
+    allow_methods=settings.cors.methods,
+    allow_headers=settings.cors.headers,
+    allow_credentials=settings.cors.credentials,   # Allows cookies
 )
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-app.include_router(users_router, prefix="/users", tags=["users"])
+app.include_router(api_router, prefix=settings.api.prefix)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(
+        settings.app.entrypoint, 
+        host=settings.app.host, 
+        port=settings.app.port, 
+        reload=settings.app.reload
+    )

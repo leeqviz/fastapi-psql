@@ -3,8 +3,9 @@ from datetime import datetime
 from sqlalchemy import DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.db import Base
-from src.utils.timestamp import timestamp_with_tz
+from src.utils import timestamp_with_tz
+
+from . import Base
 
 
 class User(Base):

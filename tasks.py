@@ -36,5 +36,4 @@ def clean(c):
     folders = [".venv", ".pytest_cache", ".ruff_cache", "__pycache__"]
     for folder in folders:
         if os.path.exists(folder):
-            print(f"Removing {folder}...")
             shutil.rmtree(folder, ignore_errors=True)

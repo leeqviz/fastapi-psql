@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,7 +13,7 @@ class UsersRepository:
     async def get_all(self):
         return (await self.session.execute(select(User))).scalars().all()
     
-    async def get_by_id(self, user_id: uuid.UUID):
+    async def get_by_id(self, user_id: UUID):
         return await self.session.get(User, user_id)
     
     async def create(self, user: User):

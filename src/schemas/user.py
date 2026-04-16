@@ -1,10 +1,10 @@
-import uuid
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
 
 class UserOut(BaseModel):
-    id: uuid.UUID
+    id: UUID
     name: str
     email: str
     password: str
