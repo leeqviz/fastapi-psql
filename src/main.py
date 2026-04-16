@@ -10,7 +10,7 @@ from .routers import api_router
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    await psql_conn.init()
+    # await psql_conn.init()
     yield
     await psql_conn.dispose()
 

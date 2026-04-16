@@ -13,10 +13,6 @@ from src.models import Base
 # access to the values within the .ini file in use.
 config = context.config
 
-db_url = settings.postgres.url
-
-config.set_main_option("sqlalchemy.url", db_url)
-
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -32,6 +28,7 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+config.set_main_option("sqlalchemy.url", settings.postgres.url)
 
 
 def run_migrations_offline() -> None:
