@@ -21,9 +21,10 @@ class UsersService:
         return UserOut.model_validate(user)
     
     async def create(self, user: UserIn):
-        new_user = User(id=uuid4(), name=user.name, email=user.email, password=user.password)
+        new_user = User(**user.model_dump(), id=uuid4())
         await self.repo.create(new_user)
         await self.session.commit()
+        # await self.session.refresh(new_user)
         return new_user
     
     async def update(self, user_id: UUID, user: UserIn):

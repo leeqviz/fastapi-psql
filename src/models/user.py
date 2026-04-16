@@ -6,9 +6,10 @@ from sqlalchemy.orm import Mapped, mapped_column
 from src.utils import timestamp_with_tz
 
 from . import Base
+from .mixins import UUID_PK_Mixin
 
 
-class User(Base):
+class User(UUID_PK_Mixin, Base):
     __tablename__ = "users"
 
     name: Mapped[str] = mapped_column(unique=True, nullable=False)
