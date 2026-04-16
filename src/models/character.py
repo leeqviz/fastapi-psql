@@ -9,6 +9,7 @@ from .mixins import Created_At_Mixin, Updated_At_Mixin, UUID_PK_Mixin
 
 if TYPE_CHECKING:
     from src.models.background import Background
+    from src.models.inventory import Inventory
     from src.models.race import Race
     from src.models.user import User
 
@@ -37,6 +38,10 @@ class Character(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
         uselist=False,
         cascade="all, delete-orphan",
     )
+    inventories: Mapped[list["Inventory"]] = relationship(
+        back_populates="character",
+        cascade="all, delete-orphan",
+    )
     
 class CharacterStat(Created_At_Mixin, Updated_At_Mixin, Base):
     __tablename__ = "character_stats"
@@ -55,4 +60,4 @@ class CharacterStat(Created_At_Mixin, Updated_At_Mixin, Base):
         unique=True,
     )
 
-    character: Mapped["Character"] = relationship(back_populates="stats")
+    character: Mapped["Character"] = relationship(back_populates="stat")
