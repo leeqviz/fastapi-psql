@@ -19,3 +19,9 @@ class User(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
         back_populates="users",
         cascade="all, delete-orphan",
     )
+    
+    def __str__ (self):
+        return f"User(id={self.id}, name={self.name}, email={self.email}, password={self.password})"
+    
+    def __repr__ (self):
+        return str(self)

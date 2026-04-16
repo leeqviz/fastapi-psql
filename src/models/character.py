@@ -8,6 +8,8 @@ from . import Base
 from .mixins import Created_At_Mixin, Updated_At_Mixin, UUID_PK_Mixin
 
 if TYPE_CHECKING:
+    from src.models.background import Background
+    from src.models.race import Race
     from src.models.user import User
 
 class Character(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
@@ -18,8 +20,18 @@ class Character(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
+    race_id: Mapped[Optional[UUID]] = mapped_column(
+        Uuid,
+        ForeignKey("races.id", ondelete="SET NULL"),
+    )
+    background_id: Mapped[Optional[UUID]] = mapped_column(
+        Uuid,
+        ForeignKey("backgrounds.id", ondelete="SET NULL"),
+    )
     
     user: Mapped["User"] = relationship(back_populates="characters")
+    race: Mapped[Optional["Race"]] = relationship(back_populates="characters")
+    background: Mapped[Optional["Background"]] = relationship(back_populates="characters")
     stat: Mapped[Optional["CharacterStat"]] = relationship(
         back_populates="character",
         uselist=False,
