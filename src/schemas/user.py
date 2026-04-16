@@ -3,15 +3,17 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
 
-class UserOut(BaseModel):
-    id: UUID
+class UserSchema(BaseModel):
     name: str
     email: str
     password: str
+
+
+class UserOut(UserSchema):
+    id: UUID
     
+    # optional
     model_config = ConfigDict(from_attributes=True)
         
-class UserIn(BaseModel):
-    name: str
-    email: str
-    password: str
+class UserIn(UserSchema):
+    pass

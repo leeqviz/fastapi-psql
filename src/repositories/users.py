@@ -11,7 +11,7 @@ class UsersRepository:
         self.session = session
         
     async def get_all(self):
-        return (await self.session.execute(select(User))).scalars().all()
+        return (await self.session.scalars(select(User))).all()
     
     async def get_by_id(self, user_id: UUID):
         return await self.session.get(User, user_id)
