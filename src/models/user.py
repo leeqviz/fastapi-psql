@@ -16,7 +16,7 @@ class User(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
     password: Mapped[str] = mapped_column(nullable=False)
     
     characters: Mapped[list["Character"]] = relationship(
-        back_populates="users",
+        back_populates="user",
         cascade="all, delete-orphan",
     )
     

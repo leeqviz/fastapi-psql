@@ -23,6 +23,6 @@ class Item(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
     description: Mapped[Optional[str]] = mapped_column(Text)
     
     inventories: Mapped[list["Inventory"]] = relationship(
-        back_populates="items",
+        back_populates="item",
         passive_deletes=True,
     )

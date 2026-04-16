@@ -34,12 +34,12 @@ class Character(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
     race: Mapped[Optional["Race"]] = relationship(back_populates="characters")
     background: Mapped[Optional["Background"]] = relationship(back_populates="characters")
     stat: Mapped[Optional["CharacterStat"]] = relationship(
-        back_populates="characters",
+        back_populates="character",
         uselist=False,
         cascade="all, delete-orphan",
     )
     inventories: Mapped[list["Inventory"]] = relationship(
-        back_populates="characters",
+        back_populates="character",
         cascade="all, delete-orphan",
     )
     
@@ -60,4 +60,4 @@ class CharacterStat(Created_At_Mixin, Updated_At_Mixin, Base):
         unique=True,
     )
 
-    character: Mapped["Character"] = relationship(back_populates="stats")
+    character: Mapped["Character"] = relationship(back_populates="stat")
