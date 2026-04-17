@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from os import path
 
-timestamp_with_tz = datetime.now(timezone.utc)
+timestamp_with_tz = datetime.now(UTC)
 
 
 def in_container():

@@ -1,3 +1,4 @@
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -17,20 +18,20 @@ def get_users_service(
 
 
 @users_router.get("/", response_model=list[UserOut])
-async def get_users(users_service: UsersService = Depends(get_users_service)):
+async def get_users(users_service: Annotated[UsersService, Depends(get_users_service)]):
     return await users_service.get_all()
 
 
 @users_router.get("/{user_id}", response_model=UserOut)
 async def get_user(
-    user_id: UUID, users_service: UsersService = Depends(get_users_service)
+    user_id: UUID, users_service: Annotated[UsersService, Depends(get_users_service)]
 ):
     return await users_service.get_by_id(user_id)
 
 
 @users_router.post("/", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 async def create_user(
-    user: UserIn, users_service: UsersService = Depends(get_users_service)
+    user: UserIn, users_service: Annotated[UsersService, Depends(get_users_service)]
 ):
     return await users_service.create(user)
 
@@ -39,7 +40,7 @@ async def create_user(
 async def update_user(
     user_id: UUID,
     user: UserIn,
-    users_service: UsersService = Depends(get_users_service),
+    users_service: Annotated[UsersService, Depends(get_users_service)],
 ):
     try:
         return await users_service.update(user_id, user)
@@ -51,7 +52,7 @@ async def update_user(
 
 @users_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
-    user_id: UUID, users_service: UsersService = Depends(get_users_service)
+    user_id: UUID, users_service: Annotated[UsersService, Depends(get_users_service)]
 ):
     try:
         await users_service.delete(user_id)

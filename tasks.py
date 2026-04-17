@@ -1,48 +1,44 @@
 from invoke.tasks import task
 
+HOST = "127.0.0.1"
 PORT = 8000
+RELOAD = True
 
 
 @task
 def install(c):
-    """Установка зависимостей"""
     c.run("uv sync")
 
 
 @task
-def dev(c, port=PORT):
-    """Запуск сервера"""
+def dev(c, host=HOST, port=PORT, reload=RELOAD):
     c.run(
-        f"uv run uvicorn src.main:app --reload --port {port}",
+        f"uv run uvicorn src.main:app --host {host} --port {port} {reload and '--reload'}",
         env={"PYTHONIOENCODING": "utf-8"},
     )
 
 
 @task
 def test(c):
-    """Запуск тестов"""
     c.run("uv run pytest")
 
 
 @task
 def lint(c):
-    """Проверка кода"""
     c.run("uv run ruff check .")
 
 
 @task
 def format(c):
-    """Форматирование кода"""
     c.run("uv run ruff format .")
 
 
 @task
-def clean(c):
-    """Очистка временных файлов"""
-    import os
-    import shutil
+def clean(_):
+    from os import path
+    from shutil import rmtree
 
     folders = [".venv", ".pytest_cache", ".ruff_cache", "__pycache__"]
     for folder in folders:
-        if os.path.exists(folder):
-            shutil.rmtree(folder, ignore_errors=True)
+        if path.exists(folder):
+            rmtree(folder, ignore_errors=True)

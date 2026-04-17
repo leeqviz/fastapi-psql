@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -18,10 +18,10 @@ class Item(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
 
     name: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
     type: Mapped[str] = mapped_column(Text, nullable=False)
-    rarity: Mapped[Optional[str]] = mapped_column(Text)
-    weight: Mapped[Optional[Decimal]] = mapped_column(Numeric(8, 2))
-    price: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2))
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    rarity: Mapped[str | None] = mapped_column(Text)
+    weight: Mapped[Decimal | None] = mapped_column(Numeric(8, 2))
+    price: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
+    description: Mapped[str | None] = mapped_column(Text)
 
     inventories: Mapped[list["Inventory"]] = relationship(
         back_populates="item",

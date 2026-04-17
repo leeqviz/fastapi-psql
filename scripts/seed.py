@@ -40,7 +40,7 @@ async def seed():
         session.add_all(USERS_TO_SEED)
         await session.commit()
         print(f"Seed completed: inserted {len(USERS_TO_SEED)} users")
-    
+
 
 # python -m src.scripts.seed
 if __name__ == "__main__":

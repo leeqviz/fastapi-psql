@@ -22,11 +22,11 @@ class Character(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
-    race_id: Mapped[Optional[UUID]] = mapped_column(
+    race_id: Mapped[UUID | None] = mapped_column(
         Uuid,
         ForeignKey("races.id", ondelete="SET NULL"),
     )
-    background_id: Mapped[Optional[UUID]] = mapped_column(
+    background_id: Mapped[UUID | None] = mapped_column(
         Uuid,
         ForeignKey("backgrounds.id", ondelete="SET NULL"),
     )

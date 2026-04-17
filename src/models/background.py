@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,7 +14,7 @@ class Background(UUID_PK_Mixin, Base):
     __tablename__ = "backgrounds"
 
     name: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
 
     characters: Mapped[list["Character"]] = relationship(
         back_populates="background",

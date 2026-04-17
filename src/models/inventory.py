@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import Boolean, ForeignKey, Integer, Text, Uuid
@@ -36,7 +36,7 @@ class Inventory(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
     attuned: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False, server_default="false"
     )
-    notes: Mapped[Optional[str]] = mapped_column(Text)
+    notes: Mapped[str | None] = mapped_column(Text)
 
     character: Mapped["Character"] = relationship(back_populates="inventories")
     item: Mapped["Item"] = relationship(back_populates="inventories")

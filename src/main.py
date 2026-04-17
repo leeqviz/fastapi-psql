@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
+async def global_exception_handler(_: Request, exc: Exception):
     logger.error(f"Global error caught: {exc}", exc_info=True)
 
     return JSONResponse(
