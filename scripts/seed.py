@@ -11,19 +11,19 @@ USERS_TO_SEED = [
         id=uuid4(),
         email="admin@example.com",
         name="admin",
-        password="admin_password",
+        password="admin_password",  # noqa: S106
     ),
     User(
         id=uuid4(),
         email="user1@example.com",
         name="user1",
-        password="user1_password",
+        password="user1_password",  # noqa: S106
     ),
     User(
         id=uuid4(),
         email="user2@example.com",
         name="user2",
-        password="user2_password",
+        password="user2_password",  # noqa: S106
     ),
 ]
 

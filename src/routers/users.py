@@ -44,10 +44,10 @@ async def update_user(
 ):
     try:
         return await users_service.update(user_id, user)
-    except Exception:
+    except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        ) from exc
 
 
 @users_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -56,7 +56,7 @@ async def delete_user(
 ):
     try:
         await users_service.delete(user_id)
-    except Exception:
+    except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        ) from exc

@@ -15,6 +15,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pyright>=1.1.408",
     "ruff>=0.15.9",
 ]
 
@@ -45,7 +46,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["app", "src"] # imports sort
+known-first-party = ["src"] # imports sort
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"] # ignores unused imports
@@ -55,3 +56,39 @@ known-first-party = ["app", "src"] # imports sort
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.pyright]
+typeCheckingMode = "standard"
+
+include = ["src"]
+
+exclude = ["**/__pycache__", ".venv"]
+
+pythonVersion = "3.13"
+pythonPlatform = "Windows"
+
+reportGeneralTypeIssues = true
+reportPropertyTypeMismatch = true
+reportReturnType = true
+reportOptionalMemberAccess = true
+reportOptionalCall = true
+reportIndexIssue = true
+reportPrivateUsage = true
+reportImplicitStringConcatenation = true
+reportUnusedImport = true
+reportUnusedVariable = "warning"
+
+# for older syntax
+reportMissingImports = true
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
+reportUntypedFunctionDecorator = false
+
+[tool.ruff.lint.flake8-type-checking]
+# Ruff will help ensure that imports for types don't affect the application's runtime behavior
+runtime-evaluated-base-classes = [
+  "pydantic.BaseModel",
+  "sqlalchemy.orm.DeclarativeBase"
+]

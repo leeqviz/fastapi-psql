@@ -24,6 +24,11 @@ def test(c):
 
 
 @task
+def check(c):
+    c.run("uv run pyright")
+
+
+@task
 def lint(c):
     c.run("uv run ruff check .")
 
