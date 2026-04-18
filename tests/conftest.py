@@ -43,7 +43,9 @@ async def client(get_psql_session_test):
 
     app.dependency_overrides[get_psql_session] = override_get_session
 
-    async with AsyncClient(transport=ASGITransport(app=app)) as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         yield ac
 
     app.dependency_overrides.clear()
