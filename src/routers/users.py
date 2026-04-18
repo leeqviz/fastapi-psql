@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core import AppException
-from src.db import psql_conn
+from src.db import get_psql_session
 from src.schemas.user import UserIn, UserOut
 from src.services.users import UsersService
 
@@ -13,7 +13,7 @@ users_router = APIRouter()
 
 
 def get_users_service(
-    session: AsyncSession = Depends(psql_conn.get_session),
+    session: AsyncSession = Depends(get_psql_session),
 ) -> UsersService:
     return UsersService(session)
 

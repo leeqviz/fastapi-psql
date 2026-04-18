@@ -10,7 +10,7 @@ db_data/
 db_data_test/
 .venv/
 .env
-
+.env.test
 .git
 .gitignore
 .dockerignore

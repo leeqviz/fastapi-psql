@@ -1,7 +1,7 @@
 from pydantic import BaseModel, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from src.utils import in_container
+from src.utils import env_file, in_container
 
 
 class AppConfig(BaseModel):
@@ -53,7 +53,7 @@ class PostgresConfig(BaseModel):
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         case_sensitive=False,
-        env_file=(".env"),
+        env_file=env_file,
         env_nested_delimiter="_",
         env_file_encoding="utf-8",
         extra="ignore",

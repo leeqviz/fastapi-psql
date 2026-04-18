@@ -1,53 +1,49 @@
+import os
+
+# Set ENV_STATE to "test" to use test database with .env.test
+os.environ["ENV_STATE"] = "test"
+
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from src.db import psql_conn
+from src.configs import settings
+from src.db import DatabaseConnection, get_psql_session
 from src.main import app
 from src.models import Base
 
-TEST_DATABASE_URL = "postgresql+asyncpg://user:password@localhost:5432/test_db"
-
-engine = create_async_engine(TEST_DATABASE_URL, echo=False)
-session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-
-""" @pytest_asyncio.fixture(scope="session")
-def run_db_migrations():
-    alembic_cfg = Config("alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", TEST_DATABASE_URL)
-
-    command.upgrade(alembic_cfg, "head")
-    yield
-    command.downgrade(alembic_cfg, "base") """
-
-
-@pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
-async def setup_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+psql_test_conn = DatabaseConnection(
+    url=settings.postgres.url,
+    echo=settings.postgres.echo,
+    echo_pool=settings.postgres.echo_pool,
+    pool_size=settings.postgres.pool_size,
+    max_overflow=settings.postgres.max_overflow,
+)
 
 
 @pytest_asyncio.fixture
-async def get_db_session():
-    async with session_maker() as session:
+async def get_psql_session_test():
+    async with psql_test_conn.session_maker() as session:
         yield session
         await session.rollback()
 
 
+@pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
+async def setup_db():
+    async with psql_test_conn.engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    async with psql_test_conn.engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+
+
 @pytest_asyncio.fixture
-async def client(db_session):
-    def override_get_db_session():
-        yield db_session
+async def client(get_psql_session_test):
+    def override_get_session():
+        yield get_psql_session_test
 
-    app.dependency_overrides[psql_conn.get_session] = override_get_db_session
+    app.dependency_overrides[get_psql_session] = override_get_session
 
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as ac:
+    async with AsyncClient(transport=ASGITransport(app=app)) as ac:
         yield ac
 
     app.dependency_overrides.clear()

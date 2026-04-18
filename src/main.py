@@ -23,9 +23,8 @@ configure_logging()
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    # await psql_conn.init()
     yield
-    await psql_conn.dispose()
+    await psql_conn.engine.dispose()
 
 
 app = FastAPI(lifespan=lifespan)

@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from src.configs import settings
-from src.models import Base
 
 
 class DatabaseConnection:
@@ -35,17 +34,6 @@ class DatabaseConnection:
             class_=AsyncSession,
         )
 
-    async def init(self) -> None:
-        async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
-    async def dispose(self) -> None:
-        await self.engine.dispose()
-
-    async def get_session(self) -> AsyncGenerator[AsyncSession]:
-        async with self.session_maker() as session:
-            yield session
-
 
 psql_conn = DatabaseConnection(
     url=settings.postgres.url,
@@ -54,3 +42,8 @@ psql_conn = DatabaseConnection(
     pool_size=settings.postgres.pool_size,
     max_overflow=settings.postgres.max_overflow,
 )
+
+
+async def get_psql_session() -> AsyncGenerator[AsyncSession]:
+    async with psql_conn.session_maker() as session:
+        yield session
