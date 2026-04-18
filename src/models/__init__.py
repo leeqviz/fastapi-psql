@@ -15,6 +15,8 @@ __all__ = (
     "CharacterSkill",
     "CharacterAbility",
     "CharacterSpell",
+    "Role",
+    "UserRole",
 )
 # models for alembic
 from .ability import Ability
@@ -30,6 +32,8 @@ from .character_spell import CharacterSpell
 from .character_stat import CharacterStat
 from .item import Item
 from .race import Race
+from .role import Role
 from .skill import Skill
 from .spell import Spell
 from .user import User
+from .user_role import UserRole

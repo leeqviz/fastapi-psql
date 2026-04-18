@@ -7,6 +7,7 @@ from .mixins import Created_At_Mixin, Updated_At_Mixin, UUID_PK_Mixin
 
 if TYPE_CHECKING:
     from src.models.character import Character
+    from src.models.user_role import UserRole
 
 
 class User(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
@@ -17,6 +18,11 @@ class User(UUID_PK_Mixin, Created_At_Mixin, Updated_At_Mixin, Base):
     password: Mapped[str] = mapped_column(nullable=False)
 
     characters: Mapped[list["Character"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    user_roles: Mapped[list["UserRole"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
     )
