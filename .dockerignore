@@ -3,6 +3,7 @@ __pycache__/
 build/
 dist/
 wheels/
+certs/
 *.egg-info
 .ruff_cache/
 .pytest_cache/

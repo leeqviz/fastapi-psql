@@ -9,6 +9,8 @@ services:
     restart: on-failure
     ports:
       - "8000:8000"
+    volumes:
+      - ./certs:/app/certs:ro
     depends_on:
       db:
         condition: service_healthy

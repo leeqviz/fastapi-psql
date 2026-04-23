@@ -1,7 +1,11 @@
+from pathlib import Path
+
 from pydantic import BaseModel, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.utils import env_file, in_container
+
+APP_PATH = Path(__file__).resolve().parent.parent.parent
 
 
 class AppConfig(BaseModel):
@@ -17,8 +21,11 @@ class ApiConfig(BaseModel):
 
 
 class JWTConfig(BaseModel):
+    private_key_path: Path = APP_PATH / "certs" / "jwt" / "private.pem"
+    public_key_path: Path = APP_PATH / "certs" / "jwt" / "public.pem"
+
     secret: str | None = None
-    algorithm: str = "HS256"
+    algorithm: str = "RS256"
     access_token_expire_minutes: int = 30
 
 
