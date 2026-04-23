@@ -21,14 +21,17 @@ def create_access_token(
     expires_in: int = settings.jwt.access_token_expire_minutes,
     expires_delta: timedelta | None = None,
 ):
+    to_encode = payload.copy()
     now = timestamp_with_tz
     expire = now + (expires_delta or timedelta(minutes=expires_in))
 
-    to_encode = {
-        "sub": payload,
-        "exp": expire,
-        "iat": now,
-    }
+    to_encode.update(
+        {
+            # "sub": payload["name"],
+            "exp": expire,
+            "iat": now,
+        }
+    )
     return encode_jwt(to_encode)
 
 

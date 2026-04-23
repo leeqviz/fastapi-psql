@@ -24,8 +24,8 @@ class JWTConfig(BaseModel):
     private_key_path: Path = APP_PATH / "certs" / "jwt" / "private.pem"
     public_key_path: Path = APP_PATH / "certs" / "jwt" / "public.pem"
 
-    secret: str | None = None
     algorithm: str = "RS256"
+    token_type: str = "Bearer"
     access_token_expire_minutes: int = 5
 
 
