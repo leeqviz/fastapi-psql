@@ -1,11 +1,12 @@
 import os
-import subprocess
 
 # Set ENV_STATE to "test" to use test database with .env.test
 os.environ["ENV_STATE"] = "test"
 
 import pytest
 import pytest_asyncio
+from alembic import command
+from alembic.config import Config
 from httpx import ASGITransport, AsyncClient
 
 from src.configs import settings
@@ -24,13 +25,12 @@ psql_test_conn = DatabaseConnection(
 
 
 @pytest.fixture(scope="session", autouse=True)
-def apply_migrations():
-    env = os.environ.copy()
-    env["ENV_STATE"] = "test"
-    # subprocess.run(["alembic", "stamp", "head"], check=True, env=env)
-    subprocess.run(["alembic", "downgrade", "base"], check=False, env=env)
-    subprocess.run(["alembic", "upgrade", "head"], check=True, env=env)
-    return
+def setup_db():
+    config = Config("alembic.ini")
+    config.set_main_option("sqlalchemy.url", settings.postgres.url)
+    command.upgrade(config, "head")
+    yield  # tests run
+    command.downgrade(config, "base")
 
 
 @pytest_asyncio.fixture(name="db_session")
