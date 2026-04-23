@@ -9,7 +9,8 @@ from httpx import ASGITransport, AsyncClient
 from src.configs import settings
 from src.db import DatabaseConnection, get_psql_session
 from src.main import app
-from src.models import Base
+
+# asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 psql_test_conn = DatabaseConnection(
     url=settings.postgres.url,
@@ -20,26 +21,18 @@ psql_test_conn = DatabaseConnection(
 )
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(name="db_session")
 async def get_psql_session_test():
     async with psql_test_conn.session_maker() as session:
         yield session
         await session.rollback()
-
-
-@pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
-async def setup_db():
-    async with psql_test_conn.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
-    async with psql_test_conn.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+        # await session.close()
 
 
 @pytest_asyncio.fixture
-async def client(get_psql_session_test):
+async def client(db_session):
     def override_get_session():
-        yield get_psql_session_test
+        yield db_session
 
     app.dependency_overrides[get_psql_session] = override_get_session
 
