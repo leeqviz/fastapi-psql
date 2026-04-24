@@ -16,27 +16,42 @@ def encode_jwt(
     return encoded
 
 
-def issue_access_token(
+def issue_token(
     subject: str,
+    token_type: str,
+    expires_in: int,
     extra_claims: dict | None = None,
-    expires_in: int = settings.jwt.access_token_expire_minutes,
-    expires_delta: timedelta | None = None,
 ):
-    now = timestamp_with_tz
-    expire = now + (expires_delta or timedelta(minutes=expires_in))
 
     payload = {
         "sub": subject,
         "iss": settings.app.name,
-        "exp": int(expire.timestamp()),
-        "iat": int(now.timestamp()),
-        "nbf": int(now.timestamp()),
+        "exp": int((timestamp_with_tz + timedelta(minutes=expires_in)).timestamp()),
+        "iat": int(timestamp_with_tz.timestamp()),
+        "nbf": int(timestamp_with_tz.timestamp()),
+        "type": token_type,
     }
 
     if extra_claims:
         payload.update(extra_claims)
 
     return encode_jwt(payload)
+
+
+def issue_access_token(
+    subject: str,
+    extra_claims: dict | None = None,
+    expires_in: int = settings.jwt.access_token_expire_minutes,
+):
+    return issue_token(subject, "access", expires_in, extra_claims)
+
+
+def issue_refresh_token(
+    subject: str,
+    extra_claims: dict | None = None,
+    expires_in: int = settings.jwt.refresh_token_expire_minutes,
+):
+    return issue_token(subject, "refresh", expires_in, extra_claims)
 
 
 def decode_jwt(

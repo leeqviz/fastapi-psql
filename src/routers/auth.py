@@ -9,7 +9,12 @@ from src.configs import settings
 from src.db import get_psql_session
 from src.schemas.auth import LoginRequest, LoginSchema, MeSchema, TokenSchema
 from src.services.auth import AuthService
-from src.utils.auth import decode_jwt, issue_access_token, validate_password
+from src.utils.auth import (
+    decode_jwt,
+    issue_access_token,
+    issue_refresh_token,
+    validate_password,
+)
 
 http_bearer_scheme = HTTPBearer(
     bearerFormat="JWT",
@@ -55,8 +60,13 @@ async def login(user: Annotated[LoginSchema, Depends(validate_login)]) -> TokenS
         "is_active": user.is_active,
         # "roles": user.roles,
     }
-    token = issue_access_token(str(user.id), claims)
-    return TokenSchema(access_token=token, token_type=settings.jwt.token_type)
+    access_token = issue_access_token(user.id, claims)
+    refresh_token = issue_refresh_token(user.id, claims)
+    return TokenSchema(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type=settings.jwt.token_type,
+    )
 
 
 async def get_auth_user(

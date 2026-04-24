@@ -28,6 +28,7 @@ class JWTConfig(BaseModel):
     algorithm: str = "RS256"
     token_type: str = "Bearer"
     access_token_expire_minutes: int = 5
+    refresh_token_expire_minutes: int = 60 * 24
 
 
 class CORSConfig(BaseModel):

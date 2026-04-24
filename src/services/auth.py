@@ -11,4 +11,15 @@ class AuthService:
 
     async def get_user_credentials(self, name: str, email: str):
         user = await self.repo.get_by_name_and_email(name, email)
-        return LoginSchema.model_validate(user)
+
+        if not user:
+            return None
+
+        return LoginSchema(
+            id=str(user.id),
+            name=user.name,
+            email=user.email,
+            password=user.password.encode(),
+            is_active=user.is_active,
+            roles=[],  # TODO add roles
+        )

@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
@@ -10,13 +8,12 @@ class LoginRequest(BaseModel):
 
 
 class LoginSchema(BaseModel):
-    id: UUID
+    id: str
     name: str
     email: EmailStr
     password: bytes
     is_active: bool = True
-    # TODO add roles
-    # roles: list[str]
+    roles: list[str]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -35,5 +32,6 @@ class MeSchema(BaseModel):
 
 
 class TokenSchema(BaseModel):
-    access_token: str
     token_type: str
+    access_token: str
+    refresh_token: str
