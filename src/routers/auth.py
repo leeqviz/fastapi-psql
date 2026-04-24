@@ -58,14 +58,13 @@ async def login(user: Annotated[LoginSchema, Depends(validate_login)]) -> TokenS
         "name": user.name,
         "email": user.email,
         "is_active": user.is_active,
-        # "roles": user.roles,
+        "roles": user.roles,
     }
     access_token = issue_access_token(user.id, claims)
     refresh_token = issue_refresh_token(user.id, claims)
     return TokenSchema(
         access_token=access_token,
         refresh_token=refresh_token,
-        token_type=settings.jwt.token_type,
     )
 
 
@@ -81,15 +80,18 @@ async def get_auth_user(
         )
 
     token = credentials.credentials
+    unauth_ex = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Token is invalid",
+    )
     try:
         payload = decode_jwt(token)
     except InvalidTokenError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token is invalid",
-        ) from e
-    user = MeSchema.model_validate(payload)
+        raise unauth_ex from e
+    if payload.get("type") != "access" or payload.get("iss") != settings.app.name:
+        raise unauth_ex
 
+    user = MeSchema.model_validate(payload)
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -98,10 +100,7 @@ async def get_auth_user(
 
     db_user = await auth_service.get_user_credentials(user.name, user.email)
     if not db_user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token is invalid",
-        )
+        raise unauth_ex
 
     return user
 
@@ -109,3 +108,56 @@ async def get_auth_user(
 @auth_router.get("/me")
 async def me(user: Annotated[MeSchema, Depends(get_auth_user)]) -> MeSchema:
     return user
+
+
+async def validate_refresh(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(http_bearer_scheme)],
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+) -> LoginSchema:
+    if credentials.scheme.lower() != "bearer":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication scheme",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    token = credentials.credentials
+    unauth_ex = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Token is invalid",
+    )
+    try:
+        payload = decode_jwt(token)
+    except InvalidTokenError as e:
+        raise unauth_ex from e
+    if payload.get("type") != "refresh" or payload.get("iss") != settings.app.name:
+        raise unauth_ex
+
+    user = MeSchema.model_validate(payload)
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user",
+        )
+
+    db_user = await auth_service.get_user_credentials(user.name, user.email)
+    if not db_user:
+        raise unauth_ex
+
+    return db_user
+
+
+@auth_router.post("/refresh", response_model_exclude_none=True)
+async def refresh(
+    user: Annotated[LoginSchema, Depends(validate_refresh)],
+) -> TokenSchema:
+    claims = {
+        "name": user.name,
+        "email": user.email,
+        "is_active": user.is_active,
+        "roles": user.roles,
+    }
+    access_token = issue_access_token(user.id, claims)
+    return TokenSchema(
+        access_token=access_token,
+    )

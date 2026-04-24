@@ -1,4 +1,5 @@
 from datetime import timedelta
+from uuid import uuid4
 
 import bcrypt
 import jwt
@@ -25,11 +26,12 @@ def issue_token(
 
     payload = {
         "sub": subject,
+        "type": token_type,
         "iss": settings.app.name,
+        "jti": str(uuid4()),
         "exp": int((timestamp_with_tz + timedelta(minutes=expires_in)).timestamp()),
         "iat": int(timestamp_with_tz.timestamp()),
         "nbf": int(timestamp_with_tz.timestamp()),
-        "type": token_type,
     }
 
     if extra_claims:

@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 
+from src.configs import settings
+
 
 class LoginRequest(BaseModel):
     name: str
@@ -22,8 +24,10 @@ class MeSchema(BaseModel):
     name: str
     email: EmailStr
     is_active: bool = True
+    type: str
     sub: str
     iss: str
+    jti: str
     iat: int
     exp: int
     nbf: int
@@ -32,6 +36,6 @@ class MeSchema(BaseModel):
 
 
 class TokenSchema(BaseModel):
-    token_type: str
+    token_type: str = settings.jwt.token_type
     access_token: str
-    refresh_token: str
+    refresh_token: str | None = None
