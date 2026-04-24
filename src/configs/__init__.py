@@ -26,9 +26,15 @@ class JWTConfig(BaseModel):
     public_key_path: Path = APP_PATH / "certs" / "jwt" / "public.pem"
 
     algorithm: str = "RS256"
-    token_type: str = "Bearer"
+    token_type: str = "Bearer"  # noqa: S105
     access_token_expire_minutes: int = 5
     refresh_token_expire_minutes: int = 60 * 24
+
+
+class EmailerConfig(BaseModel):
+    host: str = "127.0.0.1"
+    port: int = 1025
+    sender: str = "admin@dnd-character-manager.com"
 
 
 class CORSConfig(BaseModel):
@@ -79,6 +85,7 @@ class Settings(BaseSettings):
     jwt: JWTConfig = JWTConfig()
     cors: CORSConfig = CORSConfig()
     postgres: PostgresConfig = PostgresConfig()
+    emailer: EmailerConfig = EmailerConfig()
 
 
 settings = Settings()

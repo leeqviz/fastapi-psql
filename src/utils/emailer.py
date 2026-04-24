@@ -1,7 +1,21 @@
 from email.message import EmailMessage
 
-e_message = EmailMessage()
-e_message["From"] = "From"
-e_message["To"] = "To"
-e_message["Subject"] = "Subject"
-e_message.set_content("Test message")
+import aiosmtplib
+
+from src.configs import settings
+
+
+async def send_email(sender: str, recipients: list, subject: str, content: str):
+    message = EmailMessage()
+    message["From"] = sender
+    message["To"] = recipients
+    message["Subject"] = subject
+    message.set_content(content)
+
+    await aiosmtplib.send(
+        message,
+        sender=sender,
+        recipients=recipients,
+        hostname=settings.emailer.host,
+        port=settings.emailer.port,
+    )

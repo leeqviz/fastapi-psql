@@ -15,6 +15,7 @@ from src.utils.auth import (
     issue_refresh_token,
     validate_password,
 )
+from src.utils.emailer import send_email
 
 http_bearer_scheme = HTTPBearer(
     bearerFormat="JWT",
@@ -62,6 +63,13 @@ async def login(user: Annotated[LoginSchema, Depends(validate_login)]) -> TokenS
     }
     access_token = issue_access_token(user.id, claims)
     refresh_token = issue_refresh_token(user.id, claims)
+
+    await send_email(
+        sender=settings.emailer.sender,
+        recipients=[user.email],
+        subject="Login Notification",
+        content="You have successfully logged in",
+    )
     return TokenSchema(
         access_token=access_token,
         refresh_token=refresh_token,

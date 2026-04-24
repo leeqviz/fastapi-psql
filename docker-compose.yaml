@@ -40,5 +40,17 @@ services:
       timeout: 5s
       retries: 5
 
+  emailer:
+    container_name: DnD-Character-Manager-Emailer
+    image: maildev/maildev
+    environment:
+      TZ: Europe/Moscow
+      MAILDEV_WEB_PORT: 1080
+      MAILDEV_SMTP_PORT: 1025
+    restart: on-failure
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
 volumes:
   db_data:
