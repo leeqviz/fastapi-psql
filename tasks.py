@@ -44,6 +44,11 @@ def seed(c, force=False):
 
 
 @task
+def revision(c, name="New revision"):
+    c.run(f'uv run alembic revision --autogenerate -m "{name}"')
+
+
+@task
 def upgrade(c, target="head"):
     c.run(f"uv run alembic upgrade {target}")
 

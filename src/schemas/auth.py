@@ -24,6 +24,7 @@ class MeSchema(BaseModel):
     name: str
     email: EmailStr
     is_active: bool = True
+    roles: list[str]
     type: str
     sub: str
     iss: str

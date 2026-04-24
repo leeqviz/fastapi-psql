@@ -10,7 +10,7 @@ class AuthService:
         self.repo = UsersRepository(self.session)
 
     async def get_user_credentials(self, name: str, email: str):
-        user = await self.repo.get_by_name_and_email(name, email)
+        user = await self.repo.get_with_roles(name, email)
 
         if not user:
             return None
@@ -21,5 +21,5 @@ class AuthService:
             email=user.email,
             password=user.password.encode(),
             is_active=user.is_active,
-            roles=[],  # TODO add roles
+            roles=[role.name for role in user.roles],
         )
